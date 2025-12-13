@@ -66,10 +66,17 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                sh "echo ${DOCKERHUB_PSW} | docker login -u ${DOCKERHUB_USR} --password-stdin"
-                sh "docker tag ${IMAGE_NAME}:latest ${DOCKERHUB_USR}/${IMAGE_NAME}:latest"
-                sh "docker push ${DOCKERHUB_USR}/${IMAGE_NAME}:latest"
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub_login',
+                    usernameVariable: 'DOCKERHUB_USR',
+                    passwordVariable: 'DOCKERHUB_PSW'
+                )]) {
+                    sh "echo ${DOCKERHUB_PSW} | docker login -u ${DOCKERHUB_USR} --password-stdin"
+                    sh "docker tag ${IMAGE_NAME}:latest ${DOCKERHUB_USR}/${IMAGE_NAME}:latest"
+                    sh "docker push ${DOCKERHUB_USR}/${IMAGE_NAME}:latest"
+                }
             }
         }
+
     }
 }
