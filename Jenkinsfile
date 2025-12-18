@@ -77,6 +77,25 @@ pipeline {
                 }
             }
         }
+       stage('Kubernetes Deploy - MySQL') {
+           steps {
+               sh '''
+                 kubectl apply -f k8s/mysql-pv.yaml
+                 kubectl apply -f k8s/mysql-pvc.yaml
+                 kubectl apply -f k8s/mysql-deployment.yaml
+                 kubectl apply -f k8s/mysql-service.yaml
+               '''
+           }
+       }
+       stage('Kubernetes Deploy - Application') {
+           steps {
+               sh '''
+                 kubectl apply -f k8s/app-configmap.yaml
+                 kubectl apply -f k8s/app-deployment.yaml
+                 kubectl apply -f k8s/app-service.yaml
+               '''
+           }
+       }
 
     }
 }
